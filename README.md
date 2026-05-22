@@ -54,57 +54,107 @@ Existing resume content in the template is cleared and replaced with converted E
 
 ## Repository structure
 
+## Repository structure
+
+```
+├── europass_converter/
+│   ├── 100_src/
+│   │   ├── install_dependencies.sh # prepares the local Python virtual environment
+│   │   ├── sample.json             # Reactive Resume JSON Resume v5 template
+│   │   ├── sample.xml              # example Europass Candidate XML input
+│   │   └── sample.pdf              # example Europass PDF containing embedded XML
+├── converter.py            # high-level conversion orchestration
+├── parse_candidate.py      # parses Europass Candidate XML
+├── map_resume.py           # maps parsed content into Reactive Resume JSON Resume v5
+├── sanitize_html.py        # sanitises escaped or raw HTML fragments
+├── template.py             # loads and prepares the JSON template
+├── contacts.py             # selects and classifies contact channels
+├── languages.py            # handles CEFR/native language logic
+├── cli.py                  # command-line interface
+├── README.md
+└── LICENSE
+```
+
+## Installation and usage
+
+### 1. Download a release
+
+Download the latest release archive from the repository’s **Releases** page.
+
+> [!WARNING]
+> Releases are planned but not yet published. Until then, clone the repository directly.
+> ```bash
+> git clone https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON.git
+> cd EuropassXML_to_ReactiveResumeJSON
+> ```
+
+### 2. Prepare the virtual environment
+
+Run the provided dependency installer:
+
+```bash
+bash ./100_src/install_dependencies.sh
+```
+This script prepares the local Python virtual environment used by the converter.
+
+After installation, the converter can be run with:
+
+```bash
+.venv/bin/python cli.py --help
+```
+
+### 3. Test the provided sample
+
+Use the bundled sample Europass XML and the Reactive Resume JSON Resume v5 template:
+
+```bash
+.venv/bin/python cli.py "./100_src/sample.xml" \
+  --template "./100_src/sample.json" \
+  --output "./out/resume2.json" \
+  --no-split-pages \
+  --debug \
+  --debug-parsed \
+  -v 2
+```
+
+This writes the converted JSON file to:
+
 ```text
-europass_converter/
-├── converter.py          # high-level conversion orchestration
-├── parse_candidate.py    # parses Europass Candidate XML
-├── map_resume.py         # maps parsed content into Reactive Resume JSON Resume v5
-├── sanitize_html.py      # sanitises escaped or raw HTML fragments
-├── template.py           # loads and prepares the JSON template
-├── contacts.py           # selects and classifies contact channels
-├── languages.py          # handles CEFR/native language logic
-└── cli.py                # command-line interface
+./out/resume2.json
 ```
 
-## Installation
+The resulting file can then be imported into Reactive Resume as a JSON Resume v5 file.
 
-Create and activate a virtual environment:
+The `--no-split-pages` option prevents the converter from creating multiple `metadata.layout.pages` entries. It does not guarantee that Reactive Resume will not visually paginate overflowing content when rendering the resume as a PDF.
+
+### 4. Convert another Europass file
+
+If you already have a Europass XML file, replace the XML path in the command:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+.venv/bin/python cli.py "./path/to/cv.xml" \
+  --template "./100_src/sample.json" \
+  --output "./out/resume.json"
 ```
 
-Install dependencies:
+### 5. Extract XML from a Europass PDF
+
+
+Some Europass PDF files contain the original XML as an embedded attachment. To extract it:
 
 ```bash
-pip install lxml beautifulsoup4 bleach
+# sudo apt-get install poppler-utils # Install `poppler-utils` if needed
+pdfdetach -savefile attachment.xml -o cv.xml cv.pdf
 ```
+This creates `cv.xml` in the same folder as `cv.pdf`.
 
-The project uses only the standard library for the CLI.
-
-## Basic usage
-
-From the repository root:
+Use that extracted XML file as the input to the converter:
 
 ```bash
-python cli.py ./100_src/sample.xml \
-  --template ./100_src/sample.json \
-  --output ./out/resume.json
-```
-
-Or, if installed/executed as a module:
-
-```bash
-python -m europass_converter.cli ./100_src/sample.xml \
-  --template ./100_src/sample.json \
-  --output ./out/resume.json
-```
-
-If `--output` is omitted, the converted JSON is written to standard output:
-
-```bash
-python cli.py ./100_src/sample.xml --template ./100_src/sample.json > resume.json
+.venv/bin/python cli.py "./cv.xml" \
+  --template "./100_src/sample.json" \
+  --output "./out/resume.json" \
+  --no-split-pages
 ```
 
 ## CLI options
@@ -178,13 +228,7 @@ The converter follows these mapping rules.
 | nationality                   | `basics.customFields`                                          |
 | birth date/year               | `basics.customFields`                                          |
 
-The current default contact priority is XML order unless the user provides:
-
-```bash
---preferred-email
---preferred-phone
---preferred-website
-```
+The current default contact priority is XML order unless the user provides `--preferred-email`, `--preferred-phone`, and/or `--preferred-website`.
 
 ### Work experience
 
@@ -235,21 +279,13 @@ The mapper attempts to split only obvious HTML list items into individual public
 
 ### Conferences and seminars
 
-`ConferencesAndSeminars/ConferenceAndSeminar` entries become a custom section:
-
-```text
-customSections[] with type = "projects"
-```
+`ConferencesAndSeminars/ConferenceAndSeminar` entries become a `customSections[]` with `type = "projects"`.
 
 ### Other blocks
 
-Other Europass `Others` blocks are preserved under a custom section:
+Other Europass `Others` blocks are preserved under a custom section called *Additional information*.
 
-```text
-Additional information
-```
-
-The mapper does not guess whether miscellaneous blocks are awards, interests, skills, or projects unless a specific parser rule exists.
+The mapper does not guess whether miscellaneous blocks are awards, interests, skills, or projects until a specific parser rule is implemented.
 
 ### Languages
 
@@ -259,10 +295,7 @@ Native languages from `PrimaryLanguageCode` are mapped as:
 fluency = "Native"
 level = 5
 ```
-
-Foreign languages from `PersonQualifications/PersonCompetency` are mapped using CEFR scores.
-
-Policy:
+Foreign languages from `PersonQualifications/PersonCompetency` are mapped using CEFR scores:
 
 * the numeric level is based on the lowest available CEFR score;
 * the displayed fluency is based on the spoken CEFR level;
@@ -271,58 +304,43 @@ Policy:
 
 ### References
 
-If the XML does not provide references, the converter adds a sample-style placeholder:
-
-```text
-Available upon request
-```
+If the XML does not provide references, the converter adds the 'Available upon request'  placeholder.
 
 ## HTML sanitisation
 
 Europass XML often stores escaped HTML fragments. The converter decodes and sanitises these fragments before inserting them into JSON.
 
-Allowed semantic tags:
+* Allowed semantic tags `p', `br', `ul', `ol', `li', `strong', `em', `u', `a`
 
-```text
-p, br, ul, ol, li, strong, em, u, a
-```
+* Allowed link protocols `http', `https', `mailto', `tel`
 
-Allowed link protocols:
+* Headings are converted to `p`/`strong` markup.
 
-```text
-http, https, mailto, tel
-```
+* Plain text without HTML tags is converted into paragraph HTML.
 
-The sanitizer removes or normalises:
-
-* scripts
-* styles
-* iframes
-* embedded objects
-* unknown attributes
-* inline CSS
-* layout-only spans
-* empty paragraphs
-* empty list items
-* unsafe links
-
-Headings are converted to paragraph/strong markup.
-
-Plain text without HTML tags is converted into paragraph HTML.
+* The sanitizer also removes/normalises:
+    - scripts
+    - styles
+    - iframes
+    - embedded objects
+    - unknown attributes
+    - inline CSS
+    - layout-only spans
+    - empty paragraphs
+    - empty list items
+    - unsafe links
 
 ## Layout behaviour
 
 By default, the mapper builds `metadata.layout.pages` using a standard resume order and includes only sections that contain content.
 
-Use:
+To prevent the converter from creating multiple layout page entries, use:
 
 ```bash
 --no-split-pages
 ```
 
-to prevent the converter from creating multiple layout page entries.
-
-This does not guarantee that the target rendering app will not visually paginate overflowing content. It only prevents the converter from splitting `metadata.layout.pages`.
+Clearly, this does not guarantee that the target rendering app will not paginate overflowing content when exported to PDF. It only prevents the converter from splitting `metadata.layout.pages`.
 
 ## Template handling
 
@@ -349,46 +367,7 @@ It preserves non-content fields such as:
 * `metadata.layout.sidebarWidth`
 * picture styling
 
-The converter rebuilds only `metadata.layout.pages`.
-
-## Development notes
-
-### Run with debug output
-
-```bash
-python cli.py ./100_src/sample.xml \
-  --template ./100_src/sample.json \
-  --output ./out/resume.json \
-  --debug \
-  --debug-parsed \
-  -v 2
-```
-
-### Common issue: missing `build_single_page`
-
-If `--no-split-pages` raises:
-
-```text
-NameError: name 'build_single_page' is not defined
-```
-
-ensure that `map_resume.py` contains the `build_single_page()` helper and that `rebuild_layout()` calls it only when `split_pages=False`.
-
-### Common issue: lxml element truthiness warning
-
-If you see:
-
-```text
-FutureWarning: Truth-testing of elements was a source of confusion...
-```
-
-avoid expressions such as:
-
-```python
-candidate_person or supplier_person
-```
-
-Use an explicit `is not None` check instead.
+It rebuilds only `metadata.layout.pages`.
 
 ## Python API
 
