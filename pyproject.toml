@@ -1,0 +1,16 @@
+[project]
+name = "europassxml-to-reactiveresumejson"
+version = "0.1.0"
+description = "Convert Europass Candidate XML exports into Reactive Resume JSON Resume v5."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "CC-BY-NC-SA" }
+
+dependencies = [
+    "lxml",
+    "beautifulsoup4",
+    "bleach",
+]
+
+[project.scripts]
+europass-convert = "europass_converter.cli:main"

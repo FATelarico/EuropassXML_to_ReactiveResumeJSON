@@ -19,24 +19,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
 
-try:
-    from .map_resume import MappingResult, map_candidate_to_resume
-    from .parse_candidate import (
-        CandidateParseError,
-        ParsedCandidate,
-        parse_candidate_file,
-        parse_candidate_xml,
-    )
-    from .template import TemplateError, load_template
-except ImportError:  # pragma: no cover - useful when running as flat scripts
-    from map_resume import MappingResult, map_candidate_to_resume
-    from parse_candidate import (
-        CandidateParseError,
-        ParsedCandidate,
-        parse_candidate_file,
-        parse_candidate_xml,
-    )
-    from template import TemplateError, load_template
+from .map_resume import MappingResult, map_candidate_to_resume
+from .parse_candidate import (
+    CandidateParseError,
+    ParsedCandidate,
+    parse_candidate_file,
+    parse_candidate_xml,
+)
+from .template import TemplateError, load_template
+
 
 
 class ConversionError(RuntimeError):

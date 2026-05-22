@@ -22,10 +22,7 @@ from urllib.parse import urlparse
 
 from lxml import etree
 
-try:
-    from .contacts import ContactChannel
-except ImportError:  # pragma: no cover - useful when running as a flat script
-    from contacts import ContactChannel
+from .contacts import ContactChannel
 
 
 class CandidateParseError(ValueError):

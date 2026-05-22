@@ -20,10 +20,8 @@ import traceback
 from pathlib import Path
 from typing import Any
 
-try:
-    from .converter import ConversionError, convert_files, resume_to_json
-except ImportError:  # pragma: no cover - useful when running as a flat script
-    from converter import ConversionError, convert_files, resume_to_json
+from .version import __version__
+from .converter import ConversionError, convert_files, resume_to_json
 
 
 EXIT_SUCCESS = 0
@@ -52,6 +50,12 @@ def build_parser() -> argparse.ArgumentParser:
             "This prevents converter-level page splitting, but the rendering app "
             "may still paginate visually if content overflows."
         ),
+    )
+    
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
 
     parser.add_argument(

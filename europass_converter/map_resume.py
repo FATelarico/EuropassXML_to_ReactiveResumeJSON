@@ -7,7 +7,6 @@ This module is the first layer that knows both sides:
 
 It does not parse XML and does not write files.
 """
-
 from __future__ import annotations
 
 import copy
@@ -22,70 +21,37 @@ try:
 except ImportError:  # pragma: no cover
     BeautifulSoup = None  # type: ignore[assignment]
 
-try:
-    from .contacts import (
-        ContactSelection,
-        WebsiteCandidate,
-        label_from_url,
-        normalise_url_for_link,
-        select_contacts,
-    )
-    from .languages import compress_language_level
-    from .parse_candidate import (
-        Address,
-        AttachmentData,
-        CodeLabel,
-        ConferenceSeminar,
-        Course,
-        DateRange,
-        EducationExperience,
-        LanguageCompetency,
-        OtherBlock,
-        ParsedCandidate,
-        ParsedDate,
-        PublicationGroup,
-        UnhandledBlock,
-        WorkExperience,
-    )
-    from .sanitize_html import sanitize_html
-    from .template import (
-        custom_section_base,
-        empty_website,
-        prepare_resume_template,
-        set_layout_pages,
-    )
-except ImportError:  # pragma: no cover - useful when running as flat scripts
-    from contacts import (
-        ContactSelection,
-        WebsiteCandidate,
-        label_from_url,
-        normalise_url_for_link,
-        select_contacts,
-    )
-    from languages import compress_language_level
-    from parse_candidate import (
-        Address,
-        AttachmentData,
-        CodeLabel,
-        ConferenceSeminar,
-        Course,
-        DateRange,
-        EducationExperience,
-        LanguageCompetency,
-        OtherBlock,
-        ParsedCandidate,
-        ParsedDate,
-        PublicationGroup,
-        UnhandledBlock,
-        WorkExperience,
-    )
-    from sanitize_html import sanitize_html
-    from template import (
-        custom_section_base,
-        empty_website,
-        prepare_resume_template,
-        set_layout_pages,
-    )
+from .contacts import (
+    ContactSelection,
+    WebsiteCandidate,
+    label_from_url,
+    normalise_url_for_link,
+    select_contacts,
+)
+from .languages import compress_language_level
+from .parse_candidate import (
+    Address,
+    AttachmentData,
+    CodeLabel,
+    ConferenceSeminar,
+    Course,
+    DateRange,
+    EducationExperience,
+    LanguageCompetency,
+    OtherBlock,
+    ParsedCandidate,
+    ParsedDate,
+    PublicationGroup,
+    UnhandledBlock,
+    WorkExperience,
+)
+from .sanitize_html import sanitize_html
+from .template import (
+    custom_section_base,
+    empty_website,
+    prepare_resume_template,
+    set_layout_pages,
+)
 
 
 @dataclass(frozen=True)
