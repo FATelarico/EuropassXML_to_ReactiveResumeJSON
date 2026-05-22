@@ -8,7 +8,7 @@ The converter reads a Europass `Candidate` XML file, extracts CV/resume content,
 
 This project is in active development.
 
-The current target is **Reactive Resume JSON Resume v5 import compatibility**, not human readability or plain-text editability. The converter prioritises the JSON shape accepted or emitted by Reactive Resume, using the applicaiton's own samples as templates.
+The current target is **Reactive Resume JSON Resume v5 import compatibility**, not human readability or plain-text editability. The converter prioritises the JSON shape accepted or emitted by Reactive Resume, using the application's own samples as templates.
 
 ## Supported input
 
@@ -18,7 +18,7 @@ The converter currently targets the Europass XML dialect represented by files wi
 <Candidate xmlns="http://www.europass.eu/1.0">
     ...
 </Candidate>
-````
+```
 
 The supported XML structure includes, among others:
 
@@ -54,23 +54,29 @@ Existing resume content in the template is cleared and replaced with converted E
 
 ## Repository structure
 
-## Repository structure
+The repository uses a package layout. The Python source lives inside the `europass_converter/` package directory, while project metadata and auxiliary files remain at repository root.
+
 
 ```
+.
+├── 100_src/
+│   ├── install_dependencies.sh # creates the virtual environment and installs the package
+│   ├── sample.json             # Reactive Resume JSON Resume v5 template
+│   ├── sample.xml              # example Europass Candidate XML input
+│   └── sample.pdf              # example Europass PDF containing embedded XML
 ├── europass_converter/
-│   ├── 100_src/
-│   │   ├── install_dependencies.sh # prepares the local Python virtual environment
-│   │   ├── sample.json             # Reactive Resume JSON Resume v5 template
-│   │   ├── sample.xml              # example Europass Candidate XML input
-│   │   └── sample.pdf              # example Europass PDF containing embedded XML
-├── converter.py            # high-level conversion orchestration
-├── parse_candidate.py      # parses Europass Candidate XML
-├── map_resume.py           # maps parsed content into Reactive Resume JSON Resume v5
-├── sanitize_html.py        # sanitises escaped or raw HTML fragments
-├── template.py             # loads and prepares the JSON template
-├── contacts.py             # selects and classifies contact channels
-├── languages.py            # handles CEFR/native language logic
-├── cli.py                  # command-line interface
+│   ├── __init__.py             # package initialisation
+│   ├── version.py              # version lookup with local pyproject.toml fallback
+│   ├── converter.py            # high-level conversion orchestration
+│   ├── parse_candidate.py      # parses Europass Candidate XML
+│   ├── map_resume.py           # maps parsed content into Reactive Resume JSON Resume v5
+│   ├── sanitize_html.py        # sanitises escaped or raw HTML fragments
+│   ├── template.py             # loads and prepares the JSON template
+│   ├── contacts.py             # selects and classifies contact channels
+│   ├── languages.py            # handles CEFR/native language logic
+│   └── cli.py                  # command-line interface
+├── out/                        # generated conversion outputs, usually gitignored
+├── pyproject.toml              # package metadata, dependencies, console script, version
 ├── README.md
 └── LICENSE
 ```
@@ -81,6 +87,8 @@ Existing resume content in the template is cleared and replaced with converted E
 
 Download the latest release archive from the repository’s **Releases** page.
 
+<br>
+
 > [!WARNING]
 > Releases are planned but not yet published. Until then, clone the repository directly.
 > ```bash
@@ -88,27 +96,69 @@ Download the latest release archive from the repository’s **Releases** page.
 > cd EuropassXML_to_ReactiveResumeJSON
 > ```
 
+<br>
+
 ### 2. Prepare the virtual environment
 
-Run the provided dependency installer:
+Run the provided installer:
 
 ```bash
 bash ./100_src/install_dependencies.sh
 ```
-This script prepares the local Python virtual environment used by the converter.
 
-After installation, the converter can be run with:
+The script creates a local `.venv`, installs the declared dependencies, and installs the package into that virtual environment.
+
+After installation, the converter can be called either as a console command:
 
 ```bash
-.venv/bin/python cli.py --help
+.venv/bin/europass-convert --help
 ```
+
+or as a Python module:
+
+```bash
+.venv/bin/python -m europass_converter.cli --help
+```
+
+<br>
+
+> [!TIP]
+> **Version check**
+>
+> The package version is defined in `pyproject.toml`.
+>
+> When the package is installed in the virtual environment, the version is read from installed package metadata:
+>
+> ```bash
+> .venv/bin/europass-convert --version
+> ```
+>
+> or:
+>
+> ```bash
+> .venv/bin/python -m europass_converter.cli --version
+> ```
+>
+> During local source-tree execution, `europass_converter/version.py` falls back to reading `pyproject.toml` directly. In that case, it should still display the project version, such as `0.1.0`. Only if neither installed metadata nor `pyproject.toml` can be found does it fall back to `0.1.0+local`.
 
 ### 3. Test the provided sample
 
-Use the bundled sample Europass XML and the Reactive Resume JSON Resume v5 template:
+Use the bundled sample Europass XML and the Reactive Resume JSON Resume v5 template using:
 
 ```bash
-.venv/bin/python cli.py "./100_src/sample.xml" \
+.venv/bin/python -m europass_converter.cli "./100_src/sample.xml" \
+  --template "./100_src/sample.json" \
+  --output "./out/resume2.json" \
+  --no-split-pages \
+  --debug \
+  --debug-parsed \
+  -v 2
+```
+
+Or a console script if not using the installed module:
+
+```bash
+.venv/bin/europass-convert "./100_src/sample.xml" \
   --template "./100_src/sample.json" \
   --output "./out/resume2.json" \
   --no-split-pages \
@@ -132,9 +182,25 @@ The `--no-split-pages` option prevents the converter from creating multiple `met
 If you already have a Europass XML file, replace the XML path in the command:
 
 ```bash
-.venv/bin/python cli.py "./path/to/cv.xml" \
+.venv/bin/python -m europass_converter.cli "./path/to/cv.xml" \
   --template "./100_src/sample.json" \
-  --output "./out/resume.json"
+  --output "./out/resume2.json" \
+  --no-split-pages \
+  --debug \
+  --debug-parsed \
+  -v 2
+```
+
+Or a console script if not using the installed module:
+
+```bash
+.venv/bin/europass-convert "./path/to/cv.xml" \
+  --template "./100_src/sample.json" \
+  --output "./out/resume2.json" \
+  --no-split-pages \
+  --debug \
+  --debug-parsed \
+  -v 2
 ```
 
 ### 5. Extract XML from a Europass PDF
@@ -310,9 +376,9 @@ If the XML does not provide references, the converter adds the 'Available upon r
 
 Europass XML often stores escaped HTML fragments. The converter decodes and sanitises these fragments before inserting them into JSON.
 
-* Allowed semantic tags `p', `br', `ul', `ol', `li', `strong', `em', `u', `a`
+* Allowed semantic tags `p`, `br`, `ul`, `ol`, `li`, `strong`, `em`, `u`, `a`
 
-* Allowed link protocols `http', `https', `mailto', `tel`
+* Allowed link protocols `http`, `https`, `mailto`, `tel`
 
 * Headings are converted to `p`/`strong` markup.
 
@@ -340,7 +406,7 @@ To prevent the converter from creating multiple layout page entries, use:
 --no-split-pages
 ```
 
-Clearly, this does not guarantee that the target rendering app will not paginate overflowing content when exported to PDF. It only prevents the converter from splitting `metadata.layout.pages`.
+This does not guarantee that the target rendering app will not paginate overflowing content when exported to PDF. It only prevents the converter from splitting `metadata.layout.pages`.
 
 ## Template handling
 
@@ -376,7 +442,9 @@ The public converter API is provided by `converter.py`.
 ### Convert files
 
 ```python
-from converter import convert_files, resume_to_json
+from europass_converter.converter import convert_parsed
+from europass_converter.parse_candidate import parse_candidate_file
+from europass_converter.template import load_template
 
 result = convert_files(
     "sample.xml",
@@ -406,8 +474,8 @@ result = convert_parsed(parsed, template)
 ### Convert XML string
 
 ```python
-from converter import convert_xml_string
-from template import load_template
+from europass_converter.converter import convert_xml_string
+from europass_converter.template import load_template
 
 template = load_template("sample.json")
 
@@ -422,7 +490,7 @@ The converter is split into small modules with narrow responsibilities:
 * `contacts.py` classifies and selects contact channels.
 * `languages.py` handles CEFR/native language compression.
 * `sanitize_html.py` cleans rich text.
-* `template.py` prepares an Reactive Resume JSON Resume v5 template.
+* `template.py` prepares a Reactive Resume JSON Resume v5 template.
 * `map_resume.py` applies the mapping policy.
 * `converter.py` orchestrates parsing and mapping.
 * `cli.py` handles command-line arguments and file output.
@@ -455,7 +523,7 @@ Possible improvements:
 * improve publication splitting;
 * add richer country/language code resolution;
 * add importer validation against the target app;
-* add packaging configuration with `pyproject.toml`;
+* add release automation and GitHub Actions packaging checks;
 * add CI checks for linting and tests.
 
 ## Licence
