@@ -604,10 +604,10 @@ Possible improvements:
 * add release automation and GitHub Actions packaging checks;
 * add CI checks for linting and tests.
 
-## Licence
+## Licensing
 
-This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike licence.
+Source code in this repository is licensed under the GNU Affero General Public License v3. (AGPL-3.0), unless stated otherwise.
 
-Licence: **CC BY-NC-SA**
+Documentation, including README files, manuals, and explanatory text, is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0), unless stated otherwise.
 
-You may share and adapt the material with attribution, for non-commercial purposes, provided that derivative works are distributed under the same licence.
+Sample files, test fixtures, and third-party assets may be subject to separate licensing terms as indicated in their respective files or directories.
