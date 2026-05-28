@@ -85,41 +85,115 @@ The repository uses a package layout. The Python source lives inside the `europa
 ├── media_rc.py
 ├── pyproject.toml
 ├── README.md
+├── LICENSE-docs
 └── LICENSE
 ```
 
-## Installation and usage
+## Install CLI
 
-The project uses optional dependencies. The base installation contains only the CLI converter dependencies. GUI dependencies such as `PySide6` and PDF-attachment extraction support are installed only with the `gui` extra
-
-### 1. Download a release
-
-Download the `.whl` file from the repository’s [Releases]() page.
-
-Install the wheel directly:
+Install the command-line converter from a [release](https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/releases/latest) wheel:
 
 ```bash
 python -m pip install europassxml_to_reactiveresumejson-*.whl
+````
+
+Show the available options:
+
+```bash
+europass-convert --help
 ```
 
-To install the GUI extras from the wheel:
+Or:
+
+```bash
+python -m europass_converter.cli --help
+```
+
+Check the installed version:
+
+```bash
+europass-convert --version
+```
+
+Or:
+
+```bash
+python -m europass_converter.cli --version
+```
+
+### Convert a file
+
+```bash
+europass-convert "./path/to/cv.xml" \
+  --template "./100_src/sample.json" \
+  --output "./out/resume.json" \
+  --no-split-pages
+```
+
+The resulting file can then be imported into Reactive Resume as a JSON Resume v5 file.
+
+### Use a Europass PDF
+
+Some Europass PDF files contain the original XML as an embedded attachment called `attachment.xml`.
+
+The command-line converter expects an XML file as input. To extract it from a Europass PDF CV:
+
+```bash
+# sudo apt-get install poppler-utils   # install `pdfdetach` if needed
+pdfdetach -savefile attachment.xml -o cv.xml cv.pdf
+```
+
+Then convert the extracted XML:
+
+```bash
+europass-convert "./cv.xml" \
+  --template "./100_src/sample.json" \
+  --output "./out/resume.json" \
+  --no-split-pages
+```
+
+## Install GUI
+
+Install the package with GUI support:
 
 ```bash
 python -m pip install "europassxml_to_reactiveresumejson-*.whl[gui]"
 ```
 
+Launch the GUI:
 
-### 2. Prepare the virtual environment
+```bash
+europass-convert-gui
+```
 
-Run the provided installer:
+The GUI accepts either:
+
+* a Europass Candidate XML file; or
+* a Europass PDF containing an embedded `attachment.xml`.
+
+If a PDF is selected, the GUI attempts to extract the embedded XML automatically. If extraction succeeds, the XML is saved beside the selected output JSON as `Europass.xml`. If the PDF does not contain `attachment.xml`, conversion is not started.
+
+Advanced options available in the GUI include:
+
+* indentation level;
+* compact JSON output;
+* verbosity level;
+* debug traceback logging;
+* parsed intermediate representation logging.
+
+When enabled, diagnostic can be written to file at the same time as the output JSON: `XMLconv.log` for `stout` and `debug.log` for `stderr`.
+
+## Run from source
+
+Clone the repository and prepare the virtual environment:
 
 ```bash
 bash ./100_src/install_dependencies.sh
-````
+```
 
-By default, this installs only the command-line converter.
+By default, this installs only the command-line converter dependencies.
 
-To install the GUI version:
+To install the GUI dependencies:
 
 ```bash
 bash ./100_src/install_dependencies.sh --gui
@@ -131,44 +205,19 @@ To install the development environment, including GUI and development extras:
 bash ./100_src/install_dependencies.sh --dev
 ```
 
-After installation, the converter can be called as:
-
-```bash
-.venv/bin/europass-convert --help
-```
-
-or:
+Run the CLI from the source tree:
 
 ```bash
 .venv/bin/python -m europass_converter.cli --help
 ```
 
-<br>
+Or use the installed console script inside the virtual environment:
 
-> [!TIP]
-> **Version check**
->
-> The package version is defined in `pyproject.toml`.
->
-> When the package is installed in the virtual environment, the version is read from installed package metadata:
->
-> ```bash
-> .venv/bin/europass-convert --version
-> ```
->
-> or:
->
-> ```bash
-> .venv/bin/python -m europass_converter.cli --version
-> ```
->
-> During local source-tree execution, `europass_converter/version.py` falls back to reading `pyproject.toml` directly. In that case, it should still display the project version, such as `0.2.0`. Only if neither installed metadata nor `pyproject.toml` can be found does it fall back to `0.1.0+local`.
+```bash
+.venv/bin/europass-convert --help
+```
 
-<br>
-
-### 3. Test the provided sample
-
-Use the bundled sample Europass XML and the Reactive Resume JSON Resume v5 template using:
+### Test the bundled sample
 
 ```bash
 .venv/bin/python -m europass_converter.cli "./100_src/sample.xml" \
@@ -180,7 +229,7 @@ Use the bundled sample Europass XML and the Reactive Resume JSON Resume v5 templ
   -v 2
 ```
 
-Or a console script if not using the installed module:
+Or:
 
 ```bash
 .venv/bin/europass-convert "./100_src/sample.xml" \
@@ -192,73 +241,7 @@ Or a console script if not using the installed module:
   -v 2
 ```
 
-This writes the converted JSON file to:
-
-```text
-./out/resume2.json
-```
-
-The resulting file can then be imported into Reactive Resume as a JSON Resume v5 file.
-
-The `--no-split-pages` option prevents the converter from creating multiple `metadata.layout.pages` entries. It does not guarantee that Reactive Resume will not visually paginate overflowing content when rendering the resume as a PDF.
-
-### 4. Convert another Europass file
-
-If you already have a Europass XML file, replace the XML path in the command:
-
-```bash
-.venv/bin/python -m europass_converter.cli "./path/to/cv.xml" \
-  --template "./100_src/sample.json" \
-  --output "./out/resume2.json" \
-  --no-split-pages \
-  --debug \
-  --debug-parsed \
-  -v 2
-```
-
-Or a console script if not using the installed module:
-
-```bash
-.venv/bin/europass-convert "./path/to/cv.xml" \
-  --template "./100_src/sample.json" \
-  --output "./out/resume2.json" \
-  --no-split-pages \
-  --debug \
-  --debug-parsed \
-  -v 2
-```
-
-### 5. Use a Europass PDF
-
-Some Europass PDF files contain the original XML as an embedded attachment called `attachment.xml`.
-
-The command-line converter expects an XML file as input, to extract it from a Europass PDF CV:
-
-```bash
-# sudo apt-get install poppler-utils # Install `poppler-utils` if needed
-pdfdetach -savefile attachment.xml -o cv.xml cv.pdf
-```
-This creates `cv.xml` in the same folder as `cv.pdf`.
-
-Use that extracted XML file as the input to the converter:
-
-```bash
-.venv/bin/python -m europass_converter.cli "./cv.xml" \
-  --template "./100_src/sample.json" \
-  --output "./out/resume.json" \
-  --no-split-pages
-```
-
-or:
-
-```bash
-.venv/bin/europass-convert "./cv.xml" \
-  --template "./100_src/sample.json" \
-  --output "./out/resume.json" \
-  --no-split-pages
-```
-
-If you use the GUI, however, you may select either an XML file or a PDF file. When a PDF is selected, the GUI tries to extract the embedded `attachment.xml` automatically. If the attachment exists, it is saved beside the selected output JSON as `Europass.xml`. If the PDF does not contain `attachment.xml`, the GUI shows an error and conversion is not started.
+This writes the converted JSON file to `./out/resume2.json`.
 
 ## CLI options
 
@@ -304,57 +287,6 @@ python cli.py ./100_src/sample.xml \
   -v 2
 ```
 
-## GUI usage
-
-Install the GUI extras:
-
-```bash
-bash ./100_src/install_dependencies.sh --gui
-````
-
-Launch the GUI:
-
-```bash
-.venv/bin/europass-convert-gui
-```
-
-The GUI allows selecting either:
-
-* a Europass Candidate XML file; or
-* a Europass PDF containing an embedded `attachment.xml`.
-
-The selected input path is displayed in the main window. If a PDF is selected and XML extraction is enabled, the embedded XML is written to the same directory as the output JSON as:
-
-```text
-Europass.xml
-```
-
-Advanced options are available through the advanced settings window:
-
-* indentation level;
-* compact JSON output;
-* verbosity level;
-* debug traceback logging;
-* parsed intermediate representation logging.
-
-When enabled, diagnostic files are written beside the output JSON:
-
-```text
-XMLconv.log
-debug.log
-debugParsed.log
-```
-
-
-## Exit codes
-
-```text
-0 = success
-1 = conversion, parsing, or template error
-2 = invalid CLI arguments
-```
-
-Argument errors are handled by `argparse`.
 
 ## Conversion policy
 
@@ -608,6 +540,6 @@ Possible improvements:
 
 Source code in this repository is licensed under the GNU Affero General Public License v3. (AGPL-3.0), unless stated otherwise.
 
-Documentation, including README files, manuals, and explanatory text, is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0), unless stated otherwise.
+Documentation, including README files, manuals, and explanatory text, is licensed under Creative Commons Attribution-ShareAlike 4.0 International (`CC-BY-SA-4.0`), unless stated otherwise.
 
 Sample files, test fixtures, and third-party assets may be subject to separate licensing terms as indicated in their respective files or directories.

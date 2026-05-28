@@ -1,0 +1,58 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine PySide6
+
+      - name: Generate Qt files
+        run: |
+          pyside6-rcc 200_media/media.qrc -o media_rc.py
+          pyside6-uic mainwindow.ui -o europass_converter/ui_mainwindow.py
+          pyside6-uic adv.ui -o europass_converter/ui_adv.py
+
+      - name: Build
+        run: python -m build
+
+      - name: Check distributions
+        run: python -m twine check dist/*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    environment:
+      name: pypi
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
