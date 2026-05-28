@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>210_svg/reactive-resume.svg</file>
+        <file>210_svg/Europass_Simbol.svg</file>
+        <file>210_svg/template.svg</file>
+        <file>210_svg/phone.svg</file>
+        <file>210_svg/email.svg</file>
+        <file>210_svg/document.svg</file>
+        <file>210_svg/websites.svg</file>
+        <file>211_png/transform.png</file>
+    </qresource>
+</RCC>

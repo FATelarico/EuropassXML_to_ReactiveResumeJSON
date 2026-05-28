@@ -59,44 +59,55 @@ The repository uses a package layout. The Python source lives inside the `europa
 
 ```
 .
-├── 100_src/
-│   ├── install_dependencies.sh # creates the virtual environment and installs the package
-│   ├── sample.json             # Reactive Resume JSON Resume v5 template
-│   ├── sample.xml              # example Europass Candidate XML input
-│   └── sample.pdf              # example Europass PDF containing embedded XML
-├── europass_converter/
-│   ├── __init__.py             # package initialisation
-│   ├── version.py              # version lookup with local pyproject.toml fallback
-│   ├── converter.py            # high-level conversion orchestration
-│   ├── parse_candidate.py      # parses Europass Candidate XML
-│   ├── map_resume.py           # maps parsed content into Reactive Resume JSON Resume v5
-│   ├── sanitize_html.py        # sanitises escaped or raw HTML fragments
-│   ├── template.py             # loads and prepares the JSON template
-│   ├── contacts.py             # selects and classifies contact channels
-│   ├── languages.py            # handles CEFR/native language logic
-│   └── cli.py                  # command-line interface
-├── out/                        # generated conversion outputs, usually gitignored
-├── pyproject.toml              # package metadata, dependencies, console script, version
+├── 100_src
+│   ├── install_dependencies.sh
+│   ├── sample.json
+│   ├── sample.pdf
+│   └── sample.xml
+├── 200_media
+│   └── media.qrc
+├── adv.ui
+├── europass_converter
+│   ├── cli.py
+│   ├── contacts.py
+│   ├── converter.py
+│   ├── gui.py
+│   ├── __init__.py
+│   ├── languages.py
+│   ├── map_resume.py
+│   ├── parse_candidate.py
+│   ├── sanitize_html.py
+│   ├── template.py
+│   ├── ui_adv.py
+│   ├── ui_mainwindow.py
+│   └── version.py
+├── mainwindow.ui
+├── media_rc.py
+├── pyproject.toml
 ├── README.md
 └── LICENSE
 ```
 
 ## Installation and usage
 
+The project uses optional dependencies. The base installation contains only the CLI converter dependencies. GUI dependencies such as `PySide6` and PDF-attachment extraction support are installed only with the `gui` extra
+
 ### 1. Download a release
 
-Download the latest release archive from the repository’s **Releases** page.
+Download the `.whl` file from the repository’s [Releases]() page.
 
-<br>
+Install the wheel directly:
 
-> [!WARNING]
-> Releases are planned but not yet published. Until then, clone the repository directly.
-> ```bash
-> git clone https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON.git
-> cd EuropassXML_to_ReactiveResumeJSON
-> ```
+```bash
+python -m pip install europassxml_to_reactiveresumejson-*.whl
+```
 
-<br>
+To install the GUI extras from the wheel:
+
+```bash
+python -m pip install "europassxml_to_reactiveresumejson-*.whl[gui]"
+```
+
 
 ### 2. Prepare the virtual environment
 
@@ -104,17 +115,29 @@ Run the provided installer:
 
 ```bash
 bash ./100_src/install_dependencies.sh
+````
+
+By default, this installs only the command-line converter.
+
+To install the GUI version:
+
+```bash
+bash ./100_src/install_dependencies.sh --gui
 ```
 
-The script creates a local `.venv`, installs the declared dependencies, and installs the package into that virtual environment.
+To install the development environment, including GUI and development extras:
 
-After installation, the converter can be called either as a console command:
+```bash
+bash ./100_src/install_dependencies.sh --dev
+```
+
+After installation, the converter can be called as:
 
 ```bash
 .venv/bin/europass-convert --help
 ```
 
-or as a Python module:
+or:
 
 ```bash
 .venv/bin/python -m europass_converter.cli --help
@@ -139,7 +162,9 @@ or as a Python module:
 > .venv/bin/python -m europass_converter.cli --version
 > ```
 >
-> During local source-tree execution, `europass_converter/version.py` falls back to reading `pyproject.toml` directly. In that case, it should still display the project version, such as `0.1.0`. Only if neither installed metadata nor `pyproject.toml` can be found does it fall back to `0.1.0+local`.
+> During local source-tree execution, `europass_converter/version.py` falls back to reading `pyproject.toml` directly. In that case, it should still display the project version, such as `0.2.0`. Only if neither installed metadata nor `pyproject.toml` can be found does it fall back to `0.1.0+local`.
+
+<br>
 
 ### 3. Test the provided sample
 
@@ -203,10 +228,11 @@ Or a console script if not using the installed module:
   -v 2
 ```
 
-### 5. Extract XML from a Europass PDF
+### 5. Use a Europass PDF
 
+Some Europass PDF files contain the original XML as an embedded attachment called `attachment.xml`.
 
-Some Europass PDF files contain the original XML as an embedded attachment. To extract it:
+The command-line converter expects an XML file as input, to extract it from a Europass PDF CV:
 
 ```bash
 # sudo apt-get install poppler-utils # Install `poppler-utils` if needed
@@ -217,11 +243,22 @@ This creates `cv.xml` in the same folder as `cv.pdf`.
 Use that extracted XML file as the input to the converter:
 
 ```bash
-.venv/bin/python cli.py "./cv.xml" \
+.venv/bin/python -m europass_converter.cli "./cv.xml" \
   --template "./100_src/sample.json" \
   --output "./out/resume.json" \
   --no-split-pages
 ```
+
+or:
+
+```bash
+.venv/bin/europass-convert "./cv.xml" \
+  --template "./100_src/sample.json" \
+  --output "./out/resume.json" \
+  --no-split-pages
+```
+
+If you use the GUI, however, you may select either an XML file or a PDF file. When a PDF is selected, the GUI tries to extract the embedded `attachment.xml` automatically. If the attachment exists, it is saved beside the selected output JSON as `Europass.xml`. If the PDF does not contain `attachment.xml`, the GUI shows an error and conversion is not started.
 
 ## CLI options
 
@@ -266,6 +303,48 @@ python cli.py ./100_src/sample.xml \
   --debug-parsed \
   -v 2
 ```
+
+## GUI usage
+
+Install the GUI extras:
+
+```bash
+bash ./100_src/install_dependencies.sh --gui
+````
+
+Launch the GUI:
+
+```bash
+.venv/bin/europass-convert-gui
+```
+
+The GUI allows selecting either:
+
+* a Europass Candidate XML file; or
+* a Europass PDF containing an embedded `attachment.xml`.
+
+The selected input path is displayed in the main window. If a PDF is selected and XML extraction is enabled, the embedded XML is written to the same directory as the output JSON as:
+
+```text
+Europass.xml
+```
+
+Advanced options are available through the advanced settings window:
+
+* indentation level;
+* compact JSON output;
+* verbosity level;
+* debug traceback logging;
+* parsed intermediate representation logging.
+
+When enabled, diagnostic files are written beside the output JSON:
+
+```text
+XMLconv.log
+debug.log
+debugParsed.log
+```
+
 
 ## Exit codes
 
@@ -442,9 +521,7 @@ The public converter API is provided by `converter.py`.
 ### Convert files
 
 ```python
-from europass_converter.converter import convert_parsed
-from europass_converter.parse_candidate import parse_candidate_file
-from europass_converter.template import load_template
+from europass_converter.converter import convert_files, resume_to_json
 
 result = convert_files(
     "sample.xml",
@@ -518,8 +595,9 @@ Possible improvements:
 
 * add tests for each module;
 * add strict-schema output mode;
-* add a GUI or interactive contact selector;
-* add support for multiple Europass XML dialects;
+* improve GUI packaging and release builds;
+* add an interactive contact selector;
+<!-- * add support for multiple Europass XML dialects;-->
 * improve publication splitting;
 * add richer country/language code resolution;
 * add importer validation against the target app;

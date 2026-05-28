@@ -1,16 +1,53 @@
 [project]
 name = "europassxml-to-reactiveresumejson"
-version = "0.1.0"
+version = "0.2.0"
 description = "Convert Europass Candidate XML exports into Reactive Resume JSON Resume v5."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "CC-BY-NC-SA" }
-
+license = "CC-BY-NC-SA-4.0"
 dependencies = [
     "lxml",
     "beautifulsoup4",
     "bleach",
 ]
 
+[project.optional-dependencies]
+gui = [
+    "PySide6",
+    "pypdf",
+]
+dev = [
+    "pytest",
+    "ruff",
+]
+
 [project.scripts]
 europass-convert = "europass_converter.cli:main"
+europass-convert-gui = "europass_converter.gui:main"
+
+[tool.pyside6-project]
+files = [
+    "200_media/media.qrc",
+    "adv.ui",
+    "europass_converter/__init__.py",
+    "europass_converter/cli.py",
+    "europass_converter/contacts.py",
+    "europass_converter/converter.py",
+    "europass_converter/gui.py",
+    "europass_converter/languages.py",
+    "europass_converter/map_resume.py",
+    "europass_converter/parse_candidate.py",
+    "europass_converter/sanitize_html.py",
+    "europass_converter/template.py",
+    "europass_converter/version.py",
+    "europass_converter/media.py",
+    "mainwindow.ui",
+]
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["europass_converter"]
+py-modules = ["media_rc"]
