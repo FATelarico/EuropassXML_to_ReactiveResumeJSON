@@ -1,8 +1,16 @@
+<img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/210_svg/Europass_Simbol.svg"/> <img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/211_png/transform.png"/><img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/210_svg/reactive-resume.svg"/> 
+
 # Europass XML to Reactive Resume JSON
 
 A Python utility that converts Europass Candidate XML exports into JSON Resume v5 files for import into Reactive Resume.
 
 The converter reads a Europass `Candidate` XML file, extracts CV/resume content, sanitises HTML fragments, maps the data into the JSON Resume v5 structure expected by Reactive Resume, and reuses a provided sample JSON file as the output template for layout, typography, design, and other non-content defaults.
+
+The package is published on [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/) and can be installed with:
+
+```python
+python3 -m pip install europassxml_to_reactiveresumejson`
+```
 
 ## Status
 
@@ -65,6 +73,10 @@ The repository uses a package layout. The Python source lives inside the `europa
 │   ├── sample.pdf
 │   └── sample.xml
 ├── 200_media
+│   ├── 210svg
+│   │   └── [...]
+│   ├── 211png
+│   │   └── [...]
 │   └── media.qrc
 ├── adv.ui
 ├── europass_converter
@@ -89,13 +101,23 @@ The repository uses a package layout. The Python source lives inside the `europa
 └── LICENSE
 ```
 
+## Releases
+
+Source distributions and wheels are available from both PyPI and the repository’s GitHub Releases page.
+
 ## Install CLI
 
-Install the command-line converter from a [release](https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/releases/latest) wheel:
+Install the command-line converter from [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/):
 
 ```bash
-python -m pip install europassxml_to_reactiveresumejson-*.whl
+python -m pip install europassxml_to_reactiveresumejson
 ````
+
+Installation from a release wheel downloaded from the repository’s [Releases](https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/releases/latest) page is also possible:
+
+```bash
+python -m pip install ./europassxml_to_reactiveresumejson-*.whl
+```
 
 Show the available options:
 
@@ -154,7 +176,13 @@ europass-convert "./cv.xml" \
 
 ## Install GUI
 
-Install the package with GUI support:
+Install the package with GUI support from [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/):
+
+```bash
+python -m pip install "europassxml_to_reactiveresumejson[gui]"
+```
+
+Or from a downloaded release wheel:
 
 ```bash
 python -m pip install "europassxml_to_reactiveresumejson-*.whl[gui]"
