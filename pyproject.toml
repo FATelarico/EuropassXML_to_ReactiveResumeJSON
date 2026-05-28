@@ -1,15 +1,38 @@
 [project]
+authors = [{ name = "Fabio Ashtar Telarico" }]
+keywords = ["europass", "resume", "cv", "json resume", "reactive resume", "xml"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: OS Independent",
+  "Topic :: Text Processing :: Markup :: XML",
+  "Topic :: Utilities",
+]
 name = "europassxml-to-reactiveresumejson"
 version = "0.2.0"
 description = "Convert Europass Candidate XML exports into Reactive Resume JSON Resume v5."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "AGPL-3.0-only"
+license-files = ["LICENSE", "LICENSE-docs"]
 dependencies = [
     "lxml",
     "beautifulsoup4",
     "bleach",
 ]
+
+[project.urls]
+Homepage = "https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON"
+Repository = "https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON"
+Issues = "https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/issues"
+Changelog = "https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/releases"
+Documentation = "https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON#README"
 
 [project.optional-dependencies]
 gui = [
