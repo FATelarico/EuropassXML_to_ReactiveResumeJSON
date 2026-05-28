@@ -4,7 +4,7 @@ version = "0.2.0"
 description = "Convert Europass Candidate XML exports into Reactive Resume JSON Resume v5."
 readme = "README.md"
 requires-python = ">=3.10"
-license = "CC-BY-NC-SA-4.0"
+license = "AGPL-3.0-only"
 dependencies = [
     "lxml",
     "beautifulsoup4",
