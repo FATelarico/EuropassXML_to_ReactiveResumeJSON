@@ -25,7 +25,7 @@ The converter currently targets the Europass XML dialect represented by files wi
 ```xml
 <Candidate xmlns="http://www.europass.eu/1.0">
     ...
-</Candidate>
+</Candidate> 
 ```
 
 The supported XML structure includes, among others:
