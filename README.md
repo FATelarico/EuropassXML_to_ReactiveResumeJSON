@@ -6,8 +6,6 @@
 <a href="https://pypi.org/project/europassxml-to-reactiveresumejson/" target="_blank"><img src="https://img.shields.io/pypi/v/europassxml-to-reactiveresumejson?pypiBaseUrl=https%3A%2F%2Fpypi.org&style=plastic&logo=pypi&logoColor=%233775A9&color=brightgreen"/></a>
 <a href="https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/releases/latest" target="_blank"><img src="https://img.shields.io/github/v/release/FATelarico/EuropassXML_to_ReactiveResumeJSON?include_prereleases&sort=date&display_name=tag&style=plastic&logo=github&logoColor=%23181717&color=brightgreen"/></a>
 
-# Europass XML to Reactive Resume JSON
-
 Convert a Europass CV export into JSON Resume v5 for import into Reactive Resume.
 
 This tool is for people who already have a Europass CV and want to move it into Reactive Resume without rebuilding the resume by hand.
