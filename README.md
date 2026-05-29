@@ -1,33 +1,27 @@
-<img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/210_svg/Europass_Simbol.svg"/> <img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/211_png/transform.png"/><img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/210_svg/reactive-resume.svg"/> 
+<img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/210_svg/Europass_Simbol.svg"/> <img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/211_png/transform.png"/><img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/210_svg/reactive-resume.svg"/>
 
-# Europass XML to Reactive Resume JSON
+
+<h1> Europass XML to Reactive Resume JSON <img  src="https://img.shields.io/badge/STATUS-in%20development-orange"/> </h1>
+
 
 <img src="https://img.shields.io/pypi/v/europassxml-to-reactiveresumejson?pypiBaseUrl=https%3A%2F%2Fpypi.org&style=plastic&logo=pypi&logoColor=%233775A9&color=brightgreen"/> <img src="https://img.shields.io/github/v/release/FATelarico/EuropassXML_to_ReactiveResumeJSON?include_prereleases&sort=date&display_name=tag&style=plastic&logo=github&logoColor=%23181717&color=brightgreen"/>
 
-
 A Python utility that converts Europass Candidate XML exports into JSON Resume v5 files for import into Reactive Resume.
 
-<br>
 
-> [!TIP]
 > #### Why this exists
 > Europass can export structured CV data, but Reactive Resume cannot directly import Europass Candidate XML. This tool bridges that gap by converting Europass XML, or Europass PDFs containing embedded XML, into Reactive Resume JSON v5.
-
-<br>
+> The current goal is to ensure compatbilityi with Reactive Resume JSON Resume v5, not human readability or plain-text editability. The converter prioritises the JSON shape accepted or emitted by Reactive Resume, using the application's own samples as templates.
 
 The converter reads a Europass `Candidate` XML file, extracts CV/resume content, sanitises HTML fragments, maps the data into the JSON Resume v5 structure expected by Reactive Resume, and reuses a provided sample JSON file as the output template for layout, typography, design, and other non-content defaults.
+
+<img src="https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/blob/main/GUI.gif"/>
 
 The package is published on [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/) and can be installed with:
 
 ```python
 python3 -m pip install europassxml_to_reactiveresumejson
 ```
-
-## Status
-
-This project is in active development.
-
-The current target is **Reactive Resume JSON Resume v5 import compatibility**, not human readability or plain-text editability. The converter prioritises the JSON shape accepted or emitted by Reactive Resume, using the application's own samples as templates.
 
 ## Supported input
 
