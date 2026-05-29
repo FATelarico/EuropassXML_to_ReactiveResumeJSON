@@ -2,7 +2,7 @@ import subprocess
 import sys
 import sysconfig
 from pathlib import Path
-
+ 
 from pypdf import PdfReader
 
 from PySide6.QtCore import QFile

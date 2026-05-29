@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON"
+Homepage = "https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/"
 Repository = "https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON"
 Issues = "https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/issues"
 Changelog = "https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/releases"
