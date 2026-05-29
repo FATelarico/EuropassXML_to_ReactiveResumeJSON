@@ -1,6 +1,5 @@
 <img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/210_svg/Europass_Simbol.svg"/> <img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/211_png/transform.png"/><img height="128" src="https://raw.githubusercontent.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/refs/heads/main/200_media/210_svg/reactive-resume.svg"/>
 
-
 <h1> Europass XML to Reactive Resume JSON <img  src="https://img.shields.io/badge/STATUS-in%20development-orange"/> </h1>
 
 
@@ -17,9 +16,9 @@ It supports:
 - Europass Candidate XML exports
 - Europass PDF files that contain embedded XML
 
-The converter maps Europass content into the JSON Resume v5 structure used by Reactive Resume, while preserving layout and design defaults from a supplied Reactive Resume template JSON. This project focuses on producing JSON that imports cleanly into Reactive Resume. Therefore, the output's structure is optimised for Reactive Resume compatibility and it does not aim to be human-readable.
+The converter maps Europass content into the JSON Resume v5 structure used by Reactive Resume, while preserving layout and design defaults from a supplied Reactive Resume template JSON.
 
-<img src="https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/blob/main/GUI.gif"/>
+The output is optimised for clean import into Reactive Resume, not as a general-purpose converter to human-readable JSON.
 
 ## Typical use cases
 
@@ -36,23 +35,58 @@ The package is published on [PyPI](https://pypi.org/project/europassxml-to-react
 python -m pip install europassxml_to_reactiveresumejson
 ```
 
-Convert a Europass XML file:
-
-```python
-europass-convert "./cv.xml" \
-  --template "./sample.json" \
-  --output "./resume.json"
-```
-
-Then import resume.json into Reactive Resume.
-
 > [!NOTE]
 > The PyPI distribution name uses hyphens (`europassxml-to-reactiveresumejson`), while the pip install command uses the Python package name with underscores (`europassxml_to_reactiveresumejson`).
 
 
-## Supported input
+###  Try the bundled sample using the GUI
 
-The converter  is intended for modern Europass Candidate exports, while older `LearnerInfoType` Europass files may not convert correctly. Technically, it targets the `Candidate` XML schema, for example:
+Install the GUI from [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/):
+
+```bash
+python3 -m venv ./venv
+source ./venv/bin/activate
+python3 -m pip install europassxml_to_reactiveresumejson[gui]
+europass-convert-gui
+```
+
+After installation in a virtual environment, the package includes bundled sample files inside the virtual environment directory that can be used as shown:
+
+<img src="https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/blob/main/GUI.gif"/>
+
+###  Try the bundled sample using the CLI
+
+Use the same bundled sample files as for the GUI:
+
+```bash
+python3 -m venv env
+source env/bin/activate
+python3 -m pip install europassxml_to_reactiveresumejson
+cd ./env
+europass-convert "./100_src/sample.xml" \
+  --template "./100_src/sample.json" \
+  --output "./sample_Rx.json"
+```
+
+Then `sample_Rx.json` can be imported into Reactive Resume. For a successful sample run, expect:
+
+- a generated JSON file at `./output/resume2.json`
+- no conversion error
+- a resume that imports into Reactive Resume with content populated from the bundled Europass sample
+
+## Usage
+
+More generally, it sufficies to select the Europass files in the GUI to produce a JSON that can be  imported into Reactive Resume. Equivalently, they can be passed to a command like this:
+
+```python
+europass-convert "./cv.xml" \
+  --template "./template.json" \
+  --output "./resume.json"
+```
+
+### Supported input
+
+The converter is intended for modern Europass exports using the the `Candidate` XML schema, for example:
 
 ```xml
 <Candidate xmlns="http://www.europass.eu/1.0">
@@ -72,99 +106,34 @@ Recognised sections include, among others:
 * `Attachment`
 * `RenderingInformation`
 
-The older `LearnerInfoType` Europass schema is not the primary target of this converter.
+Older Europass files using the `LearnerInfoType` schema may not convert correctly.
 
-## Output
+### Output
 
 The converter produces JSON Resume v5 intended for import into Reactive Resume.
 
-A supplied Reactive Resume-compatible template JSON is used to mimic non-content settings such as picture styling, section wrapper settings, layout metadata, custom CSS settings, and notes.
+A supplied Reactive-Resume JSON template is used to preserve non-content settings such as photo styling, section wrapper settings, layout metadata, custom CSS settings, and notes.
 
-## Releases
+Existing resume content in the template is cleared and replaced with converted Europass content.
 
-Source distributions and wheels are available from both PyPI and the repository’s GitHub Releases page.
+## Installation
 
-## Install CLI
+### GUI
 
-Install the command-line converter from [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/):
-
-```bash
-python -m pip install europassxml_to_reactiveresumejson
-````
-
-Installation from a release wheel downloaded from the repository’s [Releases](https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/releases/latest) page is also possible:
+Besides using PyPI, as shown in the Quick Start, installation from the wheels under the repository's [Releases](https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/releases/latest) page is also possible:
 
 ```bash
-python -m pip install ./europassxml_to_reactiveresumejson-*.whl
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install "europassxml_to_reactiveresumejson[gui]"
 ```
 
-Show the available options:
+Alternatively, from a downloaded release wheel:
 
 ```bash
-europass-convert --help
-```
-
-Or:
-
-```bash
-python -m europass_converter.cli --help
-```
-
-Check the installed version:
-
-```bash
-europass-convert --version
-```
-
-Or:
-
-```bash
-python -m europass_converter.cli --version
-```
-
-### Convert a file
-
-```bash
-europass-convert "./path/to/cv.xml" \
-  --template "./100_src/sample.json" \
-  --output "./out/resume.json" \
-  --no-split-pages
-```
-
-The resulting file can then be imported into Reactive Resume as a JSON Resume v5 file.
-
-### Use a Europass PDF
-
-Some Europass PDF files contain the original XML as an embedded attachment called `attachment.xml`.
-
-The CLI expects an XML file as input. To extract it from a Europass PDF:
-
-```bash
-# sudo apt-get install poppler-utils   # install `pdfdetach` if needed
-pdfdetach -savefile attachment.xml -o cv.xml cv.pdf
-```
-
-Then convert the extracted XML:
-
-```bash
-europass-convert "./cv.xml" \
-  --template "./100_src/sample.json" \
-  --output "./out/resume.json" \
-  --no-split-pages
-```
-
-## Install GUI
-
-Install the package with GUI support from [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/):
-
-```bash
-python -m pip install "europassxml_to_reactiveresumejson[gui]"
-```
-
-Or from a downloaded release wheel:
-
-```bash
-python -m pip install "europassxml_to_reactiveresumejson-*.whl[gui]"
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install europassxml_to_reactiveresumejson-*.whl[gui]
 ```
 
 Launch the GUI:
@@ -178,174 +147,112 @@ The GUI accepts either:
 * a Europass Candidate XML file; or
 * a Europass PDF containing an embedded `attachment.xml`.
 
-If a PDF is selected, the GUI attempts to extract the embedded XML automatically. If extraction succeeds, the XML is saved beside the selected output JSON as `Europass.xml`. If the PDF does not contain `attachment.xml`, conversion is not started.
+If a PDF is selected, the GUI attempts to extract the embedded XML automatically. If extraction succeeds, the XML can be saved alongside the selected output JSON as `Europass.xml`. If the PDF does not contain `attachment.xml`, conversion is not started.
 
-Advanced options available in the GUI include:
+Advanced GUI options include:
 
-* indentation level;
-* compact JSON output;
-* verbosity level;
-* debug traceback logging;
+* indentation level
+* compact JSON output
+* verbosity level
+* debug traceback logging
 * parsed intermediate representation logging.
 
-When enabled, diagnostic output can be written alongside the output JSON:
+When enabled, diagnostic output is written alongside the output JSON:
 
 - `XMLconv.log` for standard output (`stdout`)
 - `debug.log` for standard error (`stderr`)
 
-## Repository structure
+### CLI only
 
-The repository uses a package layout. The Python source lives inside the `europass_converter/` package directory, while project metadata and auxiliary files remain at repository root.
+Install the package as a CLI utility from [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/):
 
-
-```
-.
-├── 100_src
-│   ├── install_dependencies.sh
-│   ├── sample.json
-│   ├── sample.pdf
-│   └── sample.xml
-├── 200_media
-│   ├── 210svg
-│   │   └── [...]
-│   ├── 211png
-│   │   └── [...]
-│   └── media.qrc
-├── adv.ui
-├── europass_converter
-│   ├── cli.py
-│   ├── contacts.py
-│   ├── converter.py
-│   ├── gui.py
-│   ├── __init__.py
-│   ├── languages.py
-│   ├── map_resume.py
-│   ├── parse_candidate.py
-│   ├── sanitize_html.py
-│   ├── template.py
-│   ├── ui_adv.py
-│   ├── ui_mainwindow.py
-│   └── version.py
-├── mainwindow.ui
-├── media_rc.py
-├── pyproject.toml
-├── README.md
-├── LICENSE-docs
-└── LICENSE
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install ./europassxml_to_reactiveresumejson-*.whl
 ```
 
-## Run from source
+Show the available options:
+
+```python
+europass-convert --help
+```
+
+> [!TIP]
+> The CLI can also run as a module:
+> ```bash
+> python3 -m europass_converter.cli --help
+> ```
+
+Check the installed version:
+
+```python
+europass-convert --version
+```
+
+#### Convert a Europass XML file
+
+```python
+europass-convert "./path/to/cv.xml" \
+  --template "./100_src/sample.json" \
+  --output "./output/resume.json" \
+  --no-split-pages
+```
+
+The resulting file can then be imported into Reactive Resume as a JSON Resume v5 file.
+
+#### Convert from a Europass PDF
+
+Some Europass PDF files contain the original XML as an embedded attachment called `attachment.xml`.
+
+The CLI expects an XML file as input. To extract the XML from a Europass PDF:
+
+```bash
+# sudo apt-get install poppler-utils   # install `pdfdetach` if needed
+pdfdetach -savefile attachment.xml -o cv.xml cv.pdf
+```
+
+Then convert the extracted XML:
+
+```python
+europass-convert "./cv.xml" \
+  --template "./100_src/sample.json" \
+  --output "./output/resume.json" \
+  --no-split-pages
+```
+
+### From source
 
 Clone the repository and prepare the virtual environment:
 
 ```bash
-bash ./100_src/install_dependencies.sh
+git clone https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON.git
+cd EuropassXML_to_ReactiveResumeJSON
 ```
+From source, the project can be installed with:
+|Installation mode|Command|
+|-----------------|-------|
+|CLI only         |`bash ./100_src/install_dependencies.sh`|
+|GUI support      |`bash ./100_src/install_dependencies.sh --gui`|
+|Development      |`bash ./100_src/install_dependencies.sh --dev`|
 
-By default, this installs only the command-line converter dependencies.
-
-To install the GUI dependencies:
+In all cases, the CLI can be ran:
 
 ```bash
-bash ./100_src/install_dependencies.sh --gui
-```
-
-To install the development environment, including GUI and development extras:
-
-```bash
-bash ./100_src/install_dependencies.sh --dev
-```
-
-Run the CLI from the source tree:
-
-```bash
+# As a module from the source tree
 .venv/bin/python -m europass_converter.cli --help
+# Or as an installed library
+source .venv/bin/activate
+europass-convert --help
 ```
 
-Or use the installed console script inside the virtual environment:
-
-```bash
-.venv/bin/europass-convert --help
-```
-
-### Test the bundled sample
-
-```bash
-.venv/bin/python -m europass_converter.cli "./100_src/sample.xml" \
-  --template "./100_src/sample.json" \
-  --output "./out/resume2.json" \
-  --no-split-pages \
-  --debug \
-  --debug-parsed \
-  -v 2
-```
-
-Or:
-
-```bash
-.venv/bin/europass-convert "./100_src/sample.xml" \
-  --template "./100_src/sample.json" \
-  --output "./out/resume2.json" \
-  --no-split-pages \
-  --debug \
-  --debug-parsed \
-  -v 2
-```
-
-This writes the converted JSON file to `./out/resume2.json`.
-
-## CLI options
-
-```text
-positional arguments:
-  xml_path                      Path to the Europass Candidate XML file.
-
-required options:
-  --template PATH               Path to the Reactive Resume JSON Resume v5 template.
-
-optional output options:
-  --output PATH                 Path to write the converted JSON.
-  --indent N                    JSON indentation level. Default: 2.
-  --compact                     Write compact single-line JSON.
-
-optional contact-selection options:
-  --preferred-email EMAIL       Preferred primary email if several are found.
-  --preferred-phone PHONE       Preferred primary phone if several are found.
-  --preferred-website URL       Preferred primary website if several are found.
-
-optional layout options:
-  --no-split-pages              Put all content into one metadata.layout.pages entry.
-
-diagnostic options:
-  -v, --verbose {0,1,2}         Verbosity level.
-                                0 = suppress diagnostics
-                                1 = print diagnostics if present
-                                2 = print diagnostics and success summary
-
-  --debug                       Print a full traceback on errors.
-  --debug-parsed                Print the parsed intermediate representation.
-```
-
-Example with diagnostics and no converter-level page splitting:
-
-```bash
-python cli.py ./100_src/sample.xml \
-  --template ./100_src/sample.json \
-  --output ./out/resume.json \
-  --no-split-pages \
-  --debug \
-  --debug-parsed \
-  -v 2
-```
-
-
-## Conversion policy
+## Conversion mapping
 
 The converter follows these mapping rules.
 
 ### Personal information
 
-| Europass XML source           | JSON target                                                    |
+| Europass XML source           | Reactive Resume JSON                                           |
 | ----------------------------- | -------------------------------------------------------------- |
 | `CandidatePerson/PersonName`  | `basics.name`                                                  |
 | email contact channels        | `basics.email`, additional emails to `basics.customFields`     |
@@ -356,7 +263,7 @@ The converter follows these mapping rules.
 | nationality                   | `basics.customFields`                                          |
 | birth date/year               | `basics.customFields`                                          |
 
-The current default contact priority is XML order unless the user provides `--preferred-email`, `--preferred-phone`, and/or `--preferred-website`.
+By default, contact priority follows XML order unless the user provides `--preferred-email`, `--preferred-phone`, and/or `--preferred-website` or fills the corresponding boxes in the GUI.
 
 ### Work experience
 
@@ -393,17 +300,13 @@ Raw programme concentration codes are intentionally discarded.
 
 ### Courses
 
-Europass `Others` blocks with title `Course` become certification items:
-
-```text
-sections.certifications.items[]
-```
+Europass `Others` blocks with title `Course` become certification items: `sections.certifications.items[]`.
 
 ### Publications
 
 Europass `Others` blocks with title `Pubblications` or `Publications` are parsed as publication groups.
 
-The mapper attempts to split only obvious HTML list items into individual publication records. If the group cannot be split safely, it is preserved as a custom `Publications` section.
+The mapper splits only obvious HTML list items into individual publication records. If the group cannot be split safely, it is preserved as a custom `Publications` section.
 
 ### Conferences and seminars
 
@@ -411,9 +314,9 @@ The mapper attempts to split only obvious HTML list items into individual public
 
 ### Other blocks
 
-Other Europass `Others` blocks are preserved under a custom section called *Additional information*.
+Other Europass `Others` blocks are preserved under a custom section called 'dditional information'.
 
-The mapper does not guess whether miscellaneous blocks are awards, interests, skills, or projects until a specific parser rule is implemented.
+The mapper does not guess whether miscellaneous blocks are awards, interests, skills, or projects.
 
 ### Languages
 
@@ -423,30 +326,31 @@ Native languages from `PrimaryLanguageCode` are mapped as:
 fluency = "Native"
 level = 5
 ```
+
 Foreign languages from `PersonQualifications/PersonCompetency` are mapped using CEFR scores:
 
-* the numeric level is based on the lowest available CEFR score;
-* the displayed fluency is based on the spoken CEFR level;
-* if both spoken interaction and spoken production exist, the lower of the two is used;
+* the numeric level is based on the lowest available CEFR score
+* the displayed fluency is based on the spoken CEFR level
+* if both spoken interaction and spoken production exist, the lower of the two is used
 * incomplete CEFR data is preserved during parsing and handled conservatively during mapping.
 
 ### References
 
-If the XML does not provide references, the converter adds the 'Available upon request'  placeholder.
+If the XML does not provide references, the converter aadds an 'Available upon request' placeholder.
 
 ## HTML sanitisation
 
-Europass XML often stores escaped HTML fragments. The converter decodes and sanitises these fragments before inserting them into JSON.
+Europass XML often stores escaped HTML fragments. The converter decodes and sanitises these fragments into the output JSON.
 
-* Allowed semantic tags `p`, `br`, `ul`, `ol`, `li`, `strong`, `em`, `u`, `a`
+* Allowed semantic tags: `p`, `br`, `ul`, `ol`, `li`, `strong`, `em`, `u`, `a`
 
-* Allowed link protocols `http`, `https`, `mailto`, `tel`
+* Allowed link protocols: `http`, `https`, `mailto`, `tel`
 
 * Headings are converted to `p`/`strong` markup.
 
-* Plain text without HTML tags is converted into paragraph HTML.
+* Plain text without HTML tags is converted to paragraph HTML.
 
-* The sanitizer also removes/normalises:
+* The sanitiser also removes or normalises:
     - scripts
     - styles
     - iframes
@@ -460,19 +364,15 @@ Europass XML often stores escaped HTML fragments. The converter decodes and sani
 
 ## Layout behaviour
 
-By default, the mapper builds `metadata.layout.pages` using a standard resume order and includes only sections that contain content.
+By default, the converter builds `metadata.layout.pages` using a standard resume section order and includes only sections that contain content.
 
-To prevent the converter from creating multiple layout page entries, use:
+To prevent the converter from creating multiple layout page entries, use `--no-split-pages`. In the GUI, this is the default behaviour.
 
-```bash
---no-split-pages
-```
-
-This does not guarantee that the target rendering app will not paginate overflowing content when exported to PDF. It only prevents the converter from splitting `metadata.layout.pages`.
+This does not guarantee that the Reactive Resume will not paginate overflowing content when exported to PDF. It only prevents the converter from splitting `metadata.layout.pages`.
 
 ## Template handling
 
-The converter treats the provided JSON template as the source of Reactive Resume-compatible defaults.
+The converter treats the provided template JSON as the source of Reactive Resume defaults.
 
 It clears content fields such as:
 
@@ -493,13 +393,15 @@ It preserves non-content fields such as:
 * `metadata.typography`
 * `metadata.notes`
 * `metadata.layout.sidebarWidth`
-* picture styling
 
-It rebuilds only `metadata.layout.pages`.
+It rebuilds only the `metadata.layout.pages` field.
 
 ## Python API
 
-The public converter API is provided by `converter.py`.
+> [!CAUTION]
+> For most users, the CLI is the primary interface; the Python API is intended for embedding and automation.
+
+The main high-level Python API is provided by `europass_converter.converter`.
 
 ### Convert files
 
@@ -516,22 +418,29 @@ result = convert_files(
 )
 
 json_text = resume_to_json(result.resume, indent=2)
-```
+````
 
 ### Convert parsed data
 
 ```python
-from converter import convert_parsed
-from parse_candidate import parse_candidate_file
-from template import load_template
+from europass_converter.converter import convert_parsed
+from europass_converter.parse_candidate import parse_candidate_file
+from europass_converter.template import load_template
 
 parsed = parse_candidate_file("sample.xml")
 template = load_template("sample.json")
 
-result = convert_parsed(parsed, template)
+result = convert_parsed(
+    parsed,
+    template,
+    preferred_email=None,
+    preferred_phone=None,
+    preferred_website=None,
+    split_pages=True,
+)
 ```
 
-### Convert XML string
+### Convert an XML string
 
 ```python
 from europass_converter.converter import convert_xml_string
@@ -539,57 +448,36 @@ from europass_converter.template import load_template
 
 template = load_template("sample.json")
 
-result = convert_xml_string(xml_string, template)
+with open("sample.xml", "r", encoding="utf-8") as handle:
+    xml_string = handle.read()
+
+result = convert_xml_string(
+    xml_string,
+    template,
+    preferred_email=None,
+    preferred_phone=None,
+    preferred_website=None,
+    split_pages=True,
+)
 ```
-
-## Design principles
-
-The converter is split into small modules with narrow responsibilities:
-
-* `parse_candidate.py` extracts neutral content from XML.
-* `contacts.py` classifies and selects contact channels.
-* `languages.py` handles CEFR/native language compression.
-* `sanitize_html.py` cleans rich text.
-* `template.py` prepares a Reactive Resume JSON Resume v5 template.
-* `map_resume.py` applies the mapping policy.
-* `converter.py` orchestrates parsing and mapping.
-* `cli.py` handles command-line arguments and file output.
-
-This separation keeps the conversion policy testable and prevents XML parsing, template preparation, and JSON mapping from becoming tangled.
 
 ## Known limitations
 
-This project aims to preserve and convert the most important Europass CV data into a format compatible with Reactive Resume v5. Due to differences between the two data models, some limitations apply:
+This project converts Europass CV data into a format compatible with Reactive Resume v5. Because the two data models differ, some limitations apply:
 
-* The converter is primarily designed for Europass Candidate XML and Europass PDF files containing embedded Candidate XML.
 * Not every Europass field has a direct equivalent in Reactive Resume. Some information may be simplified, merged, or omitted when no suitable target field exists.
 * Custom Europass sections, uncommon metadata, and future schema extensions may not be fully supported.
-* Formatting, styling, and visual layout are not preserved. The conversion focuses on structured content rather than presentation.
+* Formatting, styling, and layout are not preserved. The conversion focuses on structured content rather than presentation.
 * Date formats, language proficiency levels, and other standardised Europass values may be normalised to match Reactive Resume's data model.
-* Validation is performed on a best-effort basis. Successfully generated output should always be reviewed before publishing or importing into production systems.
-* Support for legacy Europass schemas may be incomplete and is not the primary development target.
+* Validation is best-effort. Generated output should always be reviewed before use.
+* Support for legacy Europass schemas is incomplete and not a primary development target.
 * Reactive Resume itself may evolve over time. Future changes to the Reactive Resume JSON schema could require updates to this converter.
 
 If you encounter unsupported files or mapping issues, please open an issue and attach a minimal reproducible example whenever possible.
 
-## Suggested future work
-
-Possible improvements:
-
-* add tests for each module;
-* add strict-schema output mode;
-* improve GUI packaging and release builds;
-* add an interactive contact selector;
-<!-- * add support for multiple Europass XML dialects;-->
-* improve publication splitting;
-* add richer country/language code resolution;
-* add importer validation against the target app;
-* add release automation and GitHub Actions packaging checks;
-* add CI checks for linting and tests.
-
 ## Licensing
 
-Source code in this repository is licensed under the GNU Affero General Public License v3. (AGPL-3.0), unless stated otherwise.
+Source code in this repository is licensed under the GNU Affero General Public License v3.0 (`AGPL-3.0`), unless stated otherwise.
 
 Documentation, including README files, manuals, and explanatory text, is licensed under Creative Commons Attribution-ShareAlike 4.0 International (`CC-BY-SA-4.0`), unless stated otherwise.
 
