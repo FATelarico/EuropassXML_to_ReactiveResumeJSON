@@ -2,11 +2,16 @@
 
 <h1> Europass XML to Reactive Resume JSON <img  src="https://img.shields.io/badge/STATUS-in%20development-orange"/> </h1>
 
-
 <a href="https://pypi.org/project/europassxml-to-reactiveresumejson/" target="_blank"><img src="https://img.shields.io/pypi/v/europassxml-to-reactiveresumejson?pypiBaseUrl=https%3A%2F%2Fpypi.org&style=plastic&logo=pypi&logoColor=%233775A9&color=brightgreen"/></a>
 <a href="https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/releases/latest" target="_blank"><img src="https://img.shields.io/github/v/release/FATelarico/EuropassXML_to_ReactiveResumeJSON?include_prereleases&sort=date&display_name=tag&style=plastic&logo=github&logoColor=%23181717&color=brightgreen"/></a>
 
-Convert a Europass CV export into JSON Resume v5 for import into Reactive Resume.
+> [!TIP]
+> ### Convert a Europass CV export into JSON Resume v5 for import into Reactive Resume.
+> Typical use cases include:
+> - Migrate an existing Europass CV into Reactive Resume
+> - Reuse Europass export data instead of retyping a resume manually
+> - Convert Europass XML extracted from a Europass PDF
+> - Batch or scripted conversion through the CLI
 
 This tool is for people who already have a Europass CV and want to move it into Reactive Resume without rebuilding the resume by hand.
 
@@ -17,13 +22,6 @@ It supports:
 The converter maps Europass content into the JSON Resume v5 structure used by Reactive Resume, while preserving layout and design defaults from a supplied Reactive Resume template JSON.
 
 The output is optimised for clean import into Reactive Resume, not as a general-purpose converter to human-readable JSON.
-
-## Typical use cases
-
-- Migrate an existing Europass CV into Reactive Resume
-- Reuse Europass export data instead of retyping a resume manually
-- Convert Europass XML extracted from a Europass PDF
-- Batch or scripted conversion through the CLI
 
 ## Quick start
 
@@ -68,15 +66,15 @@ europass-convert "./100_src/sample.xml" \
 
 Then `sample_Rx.json` can be imported into Reactive Resume. For a successful sample run, expect:
 
-- a generated JSON file at `./output/resume2.json`
+- a generated JSON file at `./sample_Rx.json`
 - no conversion error
 - a resume that imports into Reactive Resume with content populated from the bundled Europass sample
 
 ## Usage
 
-More generally, it sufficies to select the Europass files in the GUI to produce a JSON that can be  imported into Reactive Resume. Equivalently, they can be passed to a command like this:
+More generally, it suffices to select the Europass files in the GUI to produce a JSON that can be  imported into Reactive Resume. Equivalently, they can be passed to a command like this:
 
-```python
+```bash
 europass-convert "./cv.xml" \
   --template "./template.json" \
   --output "./resume.json"
@@ -84,7 +82,7 @@ europass-convert "./cv.xml" \
 
 ### Supported input
 
-The converter is intended for modern Europass exports using the the `Candidate` XML schema, for example:
+The converter is intended for modern Europass exports using the `Candidate` XML schema, for example:
 
 ```xml
 <Candidate xmlns="http://www.europass.eu/1.0">
@@ -162,7 +160,7 @@ When enabled, diagnostic output is written alongside the output JSON:
 
 ### CLI only
 
-Install the package as a CLI utility from [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/):
+Install the package as a CLI utility from [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/) as shown in the Quick Start or use a wheel from GitHub Releases:
 
 ```bash
 python3 -m venv .venv
@@ -172,7 +170,7 @@ python3 -m pip install ./europassxml_to_reactiveresumejson-*.whl
 
 Show the available options:
 
-```python
+```bash
 europass-convert --help
 ```
 
@@ -184,13 +182,13 @@ europass-convert --help
 
 Check the installed version:
 
-```python
+```bash
 europass-convert --version
 ```
 
 #### Convert a Europass XML file
 
-```python
+```bash
 europass-convert "./path/to/cv.xml" \
   --template "./100_src/sample.json" \
   --output "./output/resume.json" \
@@ -212,7 +210,7 @@ pdfdetach -savefile attachment.xml -o cv.xml cv.pdf
 
 Then convert the extracted XML:
 
-```python
+```bash
 europass-convert "./cv.xml" \
   --template "./100_src/sample.json" \
   --output "./output/resume.json" \
@@ -234,7 +232,7 @@ From source, the project can be installed with:
 |GUI support      |`bash ./100_src/install_dependencies.sh --gui`|
 |Development      |`bash ./100_src/install_dependencies.sh --dev`|
 
-In all cases, the CLI can be ran:
+In all cases, the CLI can be run:
 
 ```bash
 # As a module from the source tree
@@ -312,7 +310,7 @@ The mapper splits only obvious HTML list items into individual publication recor
 
 ### Other blocks
 
-Other Europass `Others` blocks are preserved under a custom section called 'dditional information'.
+Other Europass `Others` blocks are preserved under a custom section called 'additional information'.
 
 The mapper does not guess whether miscellaneous blocks are awards, interests, skills, or projects.
 
@@ -334,7 +332,7 @@ Foreign languages from `PersonQualifications/PersonCompetency` are mapped using 
 
 ### References
 
-If the XML does not provide references, the converter aadds an 'Available upon request' placeholder.
+If the XML does not provide references, the converter adds an 'Available upon request' placeholder.
 
 ## HTML sanitisation
 
@@ -366,7 +364,7 @@ By default, the converter builds `metadata.layout.pages` using a standard resume
 
 To prevent the converter from creating multiple layout page entries, use `--no-split-pages`. In the GUI, this is the default behaviour.
 
-This does not guarantee that the Reactive Resume will not paginate overflowing content when exported to PDF. It only prevents the converter from splitting `metadata.layout.pages`.
+This does not guarantee that Reactive Resume will not paginate overflowing content when exported to PDF. It only prevents the converter from splitting `metadata.layout.pages`.
 
 ## Template handling
 
@@ -403,7 +401,7 @@ The main high-level Python API is provided by `europass_converter.converter`.
 
 ### Convert files
 
-```python
+```bash
 from europass_converter.converter import convert_files, resume_to_json
 
 result = convert_files(
@@ -420,7 +418,7 @@ json_text = resume_to_json(result.resume, indent=2)
 
 ### Convert parsed data
 
-```python
+```bash
 from europass_converter.converter import convert_parsed
 from europass_converter.parse_candidate import parse_candidate_file
 from europass_converter.template import load_template
@@ -440,7 +438,7 @@ result = convert_parsed(
 
 ### Convert an XML string
 
-```python
+```bash
 from europass_converter.converter import convert_xml_string
 from europass_converter.template import load_template
 
