@@ -15,7 +15,7 @@ classifiers = [
   "Topic :: Utilities",
 ]
 name = "europassxml-to-reactiveresumejson"
-version = "0.2.0"
+version = "0.2.1"
 description = "Convert Europass Candidate XML exports into Reactive Resume JSON Resume v5."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -74,3 +74,11 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["europass_converter"]
 py-modules = ["media_rc"]
+
+[tool.setuptools.package-data]
+[tool.setuptools.data-files]
+"100_src" = [
+    "100_src/sample.json",
+    "100_src/sample.pdf",
+    "100_src/sample.xml",
+]

@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import sysconfig
 from pathlib import Path
 
 from pypdf import PdfReader
@@ -18,13 +19,26 @@ from .ui_adv import Ui_adv # Ui_Dialog
 
 import media_rc
 
+def get_data_file(relative_path: str) -> Path:
+    candidates = [
+        Path(__file__).resolve().parent.parent / relative_path,
+        Path(sysconfig.get_path("data")) / relative_path,
+    ]
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+
+    return candidates[-1]
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_EuropassXML_to_ReactiveResumeJSON() # Ui_MainWindow()
         self.ui.setupUi(self)
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PY_ROOT = Path(__file__).resolve().parent
 
 
 def load_ui(path: Path, parent=None):
@@ -80,6 +94,7 @@ def extract_attachment_xml_from_pdf(
 class App:
     def __init__(self):
         self.window = MainWindow()
+        self.adv_window = None
         self.adv_ui = None
 
         self.input_path = None
@@ -94,7 +109,8 @@ class App:
 
         self.window.ui.combo06.setItemData(
             0,
-            str(PROJECT_ROOT / "100_src" / "sample.json"),
+            # str(PROJECT_ROOT / "100_src" / "sample.json"),
+            str(get_data_file("100_src/sample.json")),
         )
 
         self.window.ui.tool04.clicked.connect(self.select_input_file)
@@ -110,7 +126,7 @@ class App:
         self.adv_ui.check12a.setChecked(False)
         self.adv_ui.check12b.setChecked(False)
 
-        self.adv_ui.btn13.clicked.connect(self.adv_ui.close)
+        self.adv_ui.btn13.clicked.connect(self.adv_window.close)
 
     def get_advanced_values(self):
         if self.adv_ui is None:
@@ -132,9 +148,9 @@ class App:
 
     def select_input_file(self):
         path, _ = QFileDialog.getOpenFileName(
-            self.window.ui,
-            "Select Europass XML or PDF",
-            str(PROJECT_ROOT),
+            self.window,
+            "Select input file",
+            "",
             "Input files (*.xml *.pdf);;XML files (*.xml);;PDF files (*.pdf)",
         )
 
@@ -150,26 +166,26 @@ class App:
 
     def open_advanced_window(self):
         if self.adv_ui is None:
-            self.adv_ui = QDialog(self.window.ui)
+            self.adv_window = QDialog(self.window)
             self.adv_ui = Ui_adv()
-            self.adv_ui.setupUi(self.adv_ui)
+            self.adv_ui.setupUi(self.adv_window)
             self.setup_advanced_window()
 
-        self.adv_ui.show()
-        self.adv_ui.raise_()
-        self.adv_ui.activateWindow()
+        self.adv_window.show()
+        self.adv_window.raise_()
+        self.adv_window.activateWindow()
 
     def run_converter(self):
         if self.input_path is None:
             QMessageBox.warning(
-                self.window.ui,
+                self.window,
                 "Missing input",
                 "Select an XML or PDF file first.",
             )
             return
 
         output_path, _ = QFileDialog.getSaveFileName(
-            self.window.ui,
+            self.window,
             "Save converted JSON",
             str(self.input_path.with_suffix(".json")),
             "JSON files (*.json)",
@@ -192,14 +208,14 @@ class App:
                 )
             except FileNotFoundError as exc:
                 QMessageBox.warning(
-                    self.window.ui,
+                    self.window,
                     "Missing attachment.xml",
                     str(exc),
                 )
                 return
             except Exception as exc:
                 QMessageBox.critical(
-                    self.window.ui,
+                    self.window,
                     "PDF extraction failed",
                     str(exc),
                 )
@@ -207,7 +223,7 @@ class App:
 
         elif self.input_path.suffix.lower() != ".xml":
             QMessageBox.warning(
-                self.window.ui,
+                self.window,
                 "Unsupported input file",
                 "Select either an XML file or a PDF containing attachment.xml.",
             )
@@ -279,7 +295,7 @@ class App:
 
         if result.returncode != 0:
             QMessageBox.critical(
-                self.window.ui,
+                self.window,
                 "Conversion failed",
                 f"Conversion failed. See logs in:\n{output_dir}",
             )
@@ -300,9 +316,9 @@ class App:
             )
 
         if adv["debug"] and adv["debug_parsed"]:
-                    message_lines.append(
-                        f"\nConversion and parsing debug outputs saved to:\n{output_dir / 'debug.log'}"
-                    )
+            message_lines.append(
+                f"\nConversion and parsing debug outputs saved to:\n{output_dir / 'debug.log'}"
+            )
         elif adv["debug"]:
             message_lines.append(
                 f"\nConversion debug info saved to:\n{output_dir / 'debug.log'}"
@@ -313,7 +329,7 @@ class App:
             )
 
         QMessageBox.information(
-            self.window.ui,
+            self.window,
             "Conversion complete",
             "\n".join(message_lines),
         )
