@@ -4,7 +4,8 @@
 <h1> Europass XML to Reactive Resume JSON <img  src="https://img.shields.io/badge/STATUS-in%20development-orange"/> </h1>
 
 
-<img src="https://img.shields.io/pypi/v/europassxml-to-reactiveresumejson?pypiBaseUrl=https%3A%2F%2Fpypi.org&style=plastic&logo=pypi&logoColor=%233775A9&color=brightgreen"/> <img src="https://img.shields.io/github/v/release/FATelarico/EuropassXML_to_ReactiveResumeJSON?include_prereleases&sort=date&display_name=tag&style=plastic&logo=github&logoColor=%23181717&color=brightgreen"/>
+<a href="https://pypi.org/project/europassxml-to-reactiveresumejson/" target="_blank"><img src="https://img.shields.io/pypi/v/europassxml-to-reactiveresumejson?pypiBaseUrl=https%3A%2F%2Fpypi.org&style=plastic&logo=pypi&logoColor=%233775A9&color=brightgreen"/></a>
+<a href="https://github.com/FATelarico/EuropassXML_to_ReactiveResumeJSON/releases/latest" target="_blank"><img src="https://img.shields.io/github/v/release/FATelarico/EuropassXML_to_ReactiveResumeJSON?include_prereleases&sort=date&display_name=tag&style=plastic&logo=github&logoColor=%23181717&color=brightgreen"/></a>
 
 A Python utility that converts Europass Candidate XML exports into JSON Resume v5 files for import into Reactive Resume.
 
