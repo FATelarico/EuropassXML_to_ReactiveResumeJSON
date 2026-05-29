@@ -2,14 +2,25 @@
 
 # Europass XML to Reactive Resume JSON
 
+<img src="https://img.shields.io/pypi/v/europassxml-to-reactiveresumejson?pypiBaseUrl=https%3A%2F%2Fpypi.org&style=plastic&logo=pypi&logoColor=%233775A9&color=brightgreen"/> <img src="https://img.shields.io/github/v/release/FATelarico/EuropassXML_to_ReactiveResumeJSON?include_prereleases&sort=date&display_name=tag&style=plastic&logo=github&logoColor=%23181717&color=brightgreen"/>
+
+
 A Python utility that converts Europass Candidate XML exports into JSON Resume v5 files for import into Reactive Resume.
+
+<br>
+
+> [!TIP]
+> #### Why this exists
+> Europass can export structured CV data, but Reactive Resume cannot directly import Europass Candidate XML. This tool bridges that gap by converting Europass XML, or Europass PDFs containing embedded XML, into Reactive Resume JSON v5.
+
+<br>
 
 The converter reads a Europass `Candidate` XML file, extracts CV/resume content, sanitises HTML fragments, maps the data into the JSON Resume v5 structure expected by Reactive Resume, and reuses a provided sample JSON file as the output template for layout, typography, design, and other non-content defaults.
 
 The package is published on [PyPI](https://pypi.org/project/europassxml-to-reactiveresumejson/) and can be installed with:
 
 ```python
-python3 -m pip install europassxml_to_reactiveresumejson`
+python3 -m pip install europassxml_to_reactiveresumejson
 ```
 
 ## Status
@@ -534,20 +545,20 @@ The converter is split into small modules with narrow responsibilities:
 
 This separation keeps the conversion policy testable and prevents XML parsing, template preparation, and JSON mapping from becoming tangled.
 
-## Limitations
+## Known limitations
 
-Current limitations:
+This project aims to preserve and convert the most important Europass CV data into a format compatible with Reactive Resume v5. Due to differences between the two data models, some limitations apply:
 
-* only the uploaded Europass `Candidate` XML dialect is targeted;
-* the older Europass `LearnerInfoType` schema is not the primary supported input;
-* strict generic JSON Resume compatibility is not the priority;
-* the output is optimised for Reactive Resume JSON Resume v5 import;
-* programme concentration codes are discarded;
-* employer emails are ignored;
-* detailed language CEFR sub-scores are compressed;
-* publication parsing is conservative;
-* unknown non-empty XML blocks are preserved as unhandled content rather than guessed into specific sections;
-* visual pagination may still occur in the target app even when `--no-split-pages` is used.
+* The converter is primarily designed for Europass Candidate XML and Europass PDF files containing embedded Candidate XML.
+* Not every Europass field has a direct equivalent in Reactive Resume. Some information may be simplified, merged, or omitted when no suitable target field exists.
+* Custom Europass sections, uncommon metadata, and future schema extensions may not be fully supported.
+* Formatting, styling, and visual layout are not preserved. The conversion focuses on structured content rather than presentation.
+* Date formats, language proficiency levels, and other standardised Europass values may be normalised to match Reactive Resume's data model.
+* Validation is performed on a best-effort basis. Successfully generated output should always be reviewed before publishing or importing into production systems.
+* Support for legacy Europass schemas may be incomplete and is not the primary development target.
+* Reactive Resume itself may evolve over time. Future changes to the Reactive Resume JSON schema could require updates to this converter.
+
+If you encounter unsupported files or mapping issues, please open an issue and attach a minimal reproducible example whenever possible.
 
 ## Suggested future work
 
